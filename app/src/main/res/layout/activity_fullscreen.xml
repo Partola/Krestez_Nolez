@@ -1,6 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:background="#0099cc"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".FullscreenActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
@@ -11,20 +12,38 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:padding="6dp"
+        android:background="@drawable/bg_cell"
+        android:scaleType = "centerCrop"
+        android:layout_gravity="right|bottom">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/start"
             android:id="@+id/button"
-            android:layout_gravity="center" />
+            android:text="@string/start"
+            android:textColor="@color/textstartova"
+            android:gravity="center_vertical"
+            android:layout_gravity="left|center"
+            android:textStyle="bold|italic"
+            android:drawableLeft="@drawable/icon_startova"
+            android:background="@drawable/buttonova"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp" />
 
-        <ImageButton
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton"
-            android:layout_gravity="center" />
+            android:text="@string/start_bt"
+            android:textColor="@color/textstartova"
+            android:textStyle="bold|italic"
+            android:id="@+id/button2"
+            android:layout_gravity="left|center"
+            android:drawableLeft="@drawable/icon_gamestart_bt"
+            android:background="@drawable/buttonova"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp" />
 
     </LinearLayout>
 

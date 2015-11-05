@@ -1,17 +1,17 @@
 package com.partola.krestez_nolez;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.ListView;
 
 import com.partola.krestez_nolez.util.SystemUiHider;
 
@@ -23,8 +23,9 @@ import com.partola.krestez_nolez.util.SystemUiHider;
  */
 public class FullscreenActivity extends Activity implements OnClickListener{
 
-    Button btnStart;
-    ImageButton btnStartIm;
+    Button btnStart, btnPlayBt;
+    ListView lv;
+    int resCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +36,11 @@ public class FullscreenActivity extends Activity implements OnClickListener{
 
         setContentView(R.layout.activity_fullscreen);
 
-        btnStartIm = (ImageButton) findViewById(R.id.imageButton);
         btnStart = (Button) findViewById(R.id.button);
-        btnStartIm.setOnClickListener(this);
         btnStart.setOnClickListener(this);
-        Bitmap btmp;
-        Resources res = this.getResources();
-        btmp = BitmapFactory.decodeResource(res, R.drawable.start);
-        btnStartIm.setImageBitmap(btmp);
 
+        btnPlayBt = (Button) findViewById(R.id.button2);
+        btnPlayBt.setOnClickListener(this);
     }
 
     @Override
@@ -55,11 +52,26 @@ public class FullscreenActivity extends Activity implements OnClickListener{
     public void onClick(View v){
         switch(v.getId()){
             case R.id.button:
-                Intent intent = new Intent(this, GameActivity.class);
+                Intent intent = new Intent(this, GameActivityNB.class);
                 startActivity(intent);
+                break;
+            case R.id.button2:
+                Intent intent1 = new Intent(this, SetBTActivity.class);
+                startActivityForResult(intent1, resCode);
                 break;
             default:
                 break;
+        }
+    }
+    public void onDestroy(){
+        super.onDestroy();
+        BluetoothAdapter bta = BluetoothAdapter.getDefaultAdapter();
+        if (bta.isEnabled()){
+            bta.disable();
+        }
+        BluetoothConnect btc = BluetoothConnect.getInstance();
+        if(btc != null){
+            btc.cancel();
         }
     }
 }

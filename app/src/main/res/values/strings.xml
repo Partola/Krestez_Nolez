@@ -1,11 +1,54 @@
 <resources>
-    <string name="app_name">Krestez_Nolez</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="start">Start</string>
-
-    <string name="title_activity_game">GameActivity</string>
+    <string name="app_name">Krestez-Nolez</string>
+    <string name="start">Play together</string>
+    <string name="title_activity_game" translatable="false">GameActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="dead_heat">Dead heat!</string>
+    <string name="start_bt">Play via Bluetooth</string>
+    <string name="title_activity_set_bt" translatable="false">SetBTActivity</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+<string name="menu_settings">Settings</string>
+    <string name="find">Find devices</string>
+    <string name="no_bluetooth">Your device does not contain a Bluetooth module</string>
+    <string name="on_off_bluetooth">Turn on Bluetooth</string>
+    <string name="bluetooth_enable">Bluetooth is already ON</string>
+    <string name="bt_off_on_exit">Turn off Bluetooth when you exit</string>
+    <string name="tab1_name">Target</string>
+    <string name="tab2_name">Bluetooth</string>
+    <string name="tab3_name">Terminal</string>
+    <string name="connect">Connect</string>
+    <string name="socket_created">The socket is created!</string>
+    <string name="server_socket_created">The server socket is created!</string>
+    <string name="socket_creation_err">Error creating socket!</string>
+    <string name="socket_connected">The socket is connected!</string>
+    <string name="server_socket_connected">The server socket is connected!</string>
+    <string name="socket_connection_err">Error connecting socket!</string>
+    <string name="device_not_connected">The device is not connected.</string>
+    <string name="button_send">Send</string>
+    <string name="button_clear">Clean</string>
+    <string name="transmit_string" translatable="false">T: <u>%s</u>\n</string>
+    <string name="no_hex_numbers">Enter hexadecimal numbers!!!</string>
+    <string name="format">Package format:</string>
+    <string name="fc_name">Not connected</string>
+    <string name="stop">Stop</string>
+    <string name="connect_FC">Connect</string>
+    <string name="bt_on_on_enter">Turn on Bluetooth on start</string>
+    <string name="connected">Connected: </string>
+    <string name="wait_for_inc_con">Waiting for incoming connection</string>
+    <string name="trying_to_connect">Trying to connect:</string>
+    <string name="plus">+</string>
+    <string name="menu_for_dev">Disable advertisement</string>
+    <string name="menu_for_dev2">Donate</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-3483721846143560/9504551339</string>
+    <string name="bounded_Devices">Select device to connect</string>
+    <string name="waiting_BT">Wait for BT is ON...</string>
+    <string name="btn_con_serv">Wait incoming connect</string>
+    <string name="title_activity_game_activity_nb">GameActivityNB</string>
+    <string name="title_activity_open_gl_">OpenGL_Activity</string>
+    <string name="adSizee" translatable="false">BANNER</string>
+    <string name="banner_ad_unit_id_1" translatable="false">ca-app-pub-3483721846143560/1981284535</string>
+
 </resources>

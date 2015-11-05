@@ -1,6 +1,7 @@
 package com.partola.krestez_nolez;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -8,30 +9,70 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.AttributeSet;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.os.Handler;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 public class GameActivity extends Activity implements View.OnTouchListener {
 
-    int kn[][] = new int[3][3];
-    boolean move;
-    boolean gameOver = false;
+    public static Handler handReceiveString;
+    static int kn[][] = new int[3][3];
+    boolean your_turn;
+    static boolean move, gameOver = false;
     DrawView dw;
+    BluetoothReceive btrc = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dw = new DrawView(this);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(dw);
-        //setContentView(new DrawView(this));
-        //setContentView(R.layout.activity_game);
+        setContentView(R.layout.activity_game);
+
+        dw = (DrawView)findViewById(R.id.drawView1);
+        AdView mAdView = (AdView)findViewById(R.id.adView3);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        AdView mAdView1 =  (AdView)findViewById(R.id.adView4);
+        AdRequest adRequest1 = new AdRequest.Builder().build();
+        mAdView1.loadAd(adRequest1);
         dw.setOnTouchListener(this);
+
+        btrc = new BluetoothReceive(BluetoothConnect.getInstance().getSocket());
+        if (btrc != null){
+            btrc.start();
+        }
+        handReceiveString = new Handler(){
+            public void handleMessage(android.os.Message msg) {
+                byte i[] = btrc.getKnn();
+                btrc.clearString();
+                if(i[0] != 5){
+                    kn[i[0]][i[1]] = i[2];
+                    onTouch(dw, MotionEvent.obtain(1, 1, MotionEvent.ACTION_UP, 0, 0, 0));
+                    if(i[3] == 0){
+                        move = false;
+                    }else{
+                        move = true;
+                    }
+                }else{
+                    kn[0][0] = 5;
+                    gameOver = true;
+                    onTouch(dw, MotionEvent.obtain(1, 1, MotionEvent.ACTION_UP, 0, 0, 0));
+                }
+            }
+        };
+        your_turn = true;
     }
 
     @Override
@@ -62,17 +103,36 @@ public class GameActivity extends Activity implements View.OnTouchListener {
         if(event.getAction() == MotionEvent.ACTION_UP){
             int x = (int)event.getRawX();
             int y = (int)event.getRawY();
-            int sizeX = dw.getWidth();
-            int sizeY = dw.getHeight();
+
+            Rect sizee = new Rect();
+            WindowManager w = getWindowManager();
+            Display d = w.getDefaultDisplay();
+            d.getRectSize(sizee);
+            int sizeX = sizee.width();
+            int sizeY = sizee.height();
             int deltaX, deltaY, tmp1, tmp2;
 
             if (gameOver){
+                if(kn[0][0] != 5){
+                    BluetoothTransmit bttr = new BluetoothTransmit(BluetoothConnect.getInstance().getSocket());
+                    bttr.setBuff(new byte[]{5});
+                    bttr.start();
+                }
                 gameOver = false;
                 kn = null;
                 kn = new int[3][3];
                 move = false;
+                your_turn = true;
                 dw.invalidate();
-                return false;
+                return true;
+            }
+            if((x == y) && (y == 0)){
+                dw.invalidate();
+                your_turn = true;
+                return true;
+            }
+            if(!your_turn){
+                return true;
             }
             if (y < (sizeY / 2 - sizeX / 6)){
                 tmp2 = 0;
@@ -92,6 +152,7 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                     switch(tmp2){
                         case 0:
                             if(kn[tmp1][tmp2] == 0){
+                                your_turn = false;
                                 if (!move){
                                     kn[tmp1][tmp2] = 1;
                                     move = !move;
@@ -100,10 +161,12 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                                     kn[tmp1][tmp2] = 2;
                                     move = !move;
                                 }
+                                sendSet(tmp1, tmp2);
                             }
                             break;
                         case 1:
                             if(kn[tmp1][tmp2] == 0){
+                                your_turn = false;
                                 if (!move){
                                     kn[tmp1][tmp2] = 1;
                                     move = !move;
@@ -112,10 +175,12 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                                     kn[tmp1][tmp2] = 2;
                                     move = !move;
                                 }
+                                sendSet(tmp1, tmp2);
                             }
                             break;
                         case 2:
                             if(kn[tmp1][tmp2] == 0){
+                                your_turn = false;
                                 if (!move){
                                     kn[tmp1][tmp2] = 1;
                                     move = !move;
@@ -124,6 +189,7 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                                     kn[tmp1][tmp2] = 2;
                                     move = !move;
                                 }
+                                sendSet(tmp1, tmp2);
                             }
                             break;
                         default:
@@ -135,6 +201,7 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                     switch(tmp2){
                         case 0:
                             if(kn[tmp1][tmp2] == 0){
+                                your_turn = false;
                                 if (!move){
                                     kn[tmp1][tmp2] = 1;
                                     move = !move;
@@ -143,10 +210,12 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                                     kn[tmp1][tmp2] = 2;
                                     move = !move;
                                 }
+                                sendSet(tmp1, tmp2);
                             }
                             break;
                         case 1:
                             if(kn[tmp1][tmp2] == 0){
+                                your_turn = false;
                                 if (!move){
                                     kn[tmp1][tmp2] = 1;
                                     move = !move;
@@ -155,10 +224,12 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                                     kn[tmp1][tmp2] = 2;
                                     move = !move;
                                 }
+                                sendSet(tmp1, tmp2);
                             }
                             break;
                         case 2:
                             if(kn[tmp1][tmp2] == 0){
+                                your_turn = false;
                                 if (!move){
                                     kn[tmp1][tmp2] = 1;
                                     move = !move;
@@ -167,6 +238,7 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                                     kn[tmp1][tmp2] = 2;
                                     move = !move;
                                 }
+                                sendSet(tmp1, tmp2);
                             }
                             break;
                         default:
@@ -177,6 +249,7 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                     switch(tmp2){
                         case 0:
                             if(kn[tmp1][tmp2] == 0){
+                                your_turn = false;
                                 if (!move){
                                     kn[tmp1][tmp2] = 1;
                                     move = !move;
@@ -185,10 +258,12 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                                     kn[tmp1][tmp2] = 2;
                                     move = !move;
                                 }
+                                sendSet(tmp1, tmp2);
                             }
                             break;
                         case 1:
                             if(kn[tmp1][tmp2] == 0){
+                                your_turn = false;
                                 if (!move){
                                     kn[tmp1][tmp2] = 1;
                                     move = !move;
@@ -197,10 +272,12 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                                     kn[tmp1][tmp2] = 2;
                                     move = !move;
                                 }
+                                sendSet(tmp1, tmp2);
                             }
                             break;
                         case 2:
                             if(kn[tmp1][tmp2] == 0){
+                                your_turn = false;
                                 if (!move){
                                     kn[tmp1][tmp2] = 1;
                                     move = !move;
@@ -209,6 +286,7 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                                     kn[tmp1][tmp2] = 2;
                                     move = !move;
                                 }
+                                sendSet(tmp1, tmp2);
                             }
                             break;
                         default:
@@ -223,7 +301,7 @@ public class GameActivity extends Activity implements View.OnTouchListener {
         return true;
     }
 
-    private int checkWin(){
+    private static int checkWin(){
         int k = 1;
         int win = -1;
 
@@ -258,14 +336,13 @@ public class GameActivity extends Activity implements View.OnTouchListener {
         return win;
     }
 
-    class DrawView extends View {
-
-        private Bitmap mBitmap;
+    public static class DrawView extends View {
 
         public DrawView(Context context) {
             super(context);
-            Resources res = this.getResources();
-            mBitmap = BitmapFactory.decodeResource(res, R.drawable.cross);
+        }
+        public DrawView(Context context, AttributeSet attrs) {
+            super(context, attrs);
         }
 
         private Paint mPaint = new Paint();
@@ -382,46 +459,38 @@ public class GameActivity extends Activity implements View.OnTouchListener {
             if (f >= 0){
                 switch(f){
                     case 0:
-                        canvas.drawRect(centrX - size / 3, centrY - size / 2 - size / 4, centrX - size / 3 + 10, centrY + size / 2 + size / 4, mPaint);
+                        canvas.drawRect(centrX - size / 3, centrY - size / 2 - size / 4, centrX - size / 3 + 20, centrY + size / 2 + size / 4, mPaint);
                         break;
                     case 1:
-                        canvas.drawRect(centrX, centrY - size / 2 - size / 4, centrX + 10, centrY + size / 2 + size / 4, mPaint);
+                        canvas.drawRect(centrX, centrY - size / 2 - size / 4, centrX + 20, centrY + size / 2 + size / 4, mPaint);
                         break;
                     case 2:
-                        canvas.drawRect(centrX + size / 3, centrY - size / 2 - size / 4, centrX  + size / 3 + 10, centrY + size / 2 + size / 4, mPaint);
+                        canvas.drawRect(centrX + size / 3, centrY - size / 2 - size / 4, centrX  + size / 3 + 20, centrY + size / 2 + size / 4, mPaint);
                         break;
                     case 3:
-                        canvas.drawRect(centrX - size / 2 - size / 4, centrY - size / 3, centrX + size / 2 + size / 4, centrY - size / 3 + 10, mPaint);
+                        canvas.drawRect(centrX - size / 2 - size / 4, centrY - size / 3, centrX + size / 2 + size / 4, centrY - size / 3 + 20, mPaint);
                         break;
                     case 4:
-                        canvas.drawRect(centrX - size / 2 - size / 4, centrY, centrX + size / 2 + size / 4, centrY + 10, mPaint);
+                        canvas.drawRect(centrX - size / 2 - size / 4, centrY, centrX + size / 2 + size / 4, centrY + 20, mPaint);
                         break;
                     case 5:
-                        canvas.drawRect(centrX - size / 2 - size / 4, centrY + size / 3, centrX + size / 2 + size / 4, centrY + size / 3 + 10, mPaint);
+                        canvas.drawRect(centrX - size / 2 - size / 4, centrY + size / 3, centrX + size / 2 + size / 4, centrY + size / 3 + 20, mPaint);
                         break;
                     case 6:
                         canvas.rotate(45, centrX, centrY);
-                        canvas.drawRect(centrX - size / 2 - size / 4, centrY, centrX + size / 2 + size / 4, centrY + 10, mPaint);
+                        canvas.drawRect(centrX - size / 2 - size / 4, centrY, centrX + size / 2 + size / 4, centrY + 20, mPaint);
                         canvas.rotate(-45, centrX, centrY);
                         break;
                     case 7:
                         canvas.rotate(-45, centrX, centrY);
-                        canvas.drawRect(centrX - size / 2 - size / 4, centrY, centrX + size / 2 + size / 4, centrY + 10, mPaint);
+                        canvas.drawRect(centrX - size / 2 - size / 4, centrY, centrX + size / 2 + size / 4, centrY + 20, mPaint);
                         canvas.rotate(45, centrX, centrY);
                         break;
                     case 8:
-                        canvas.drawRect(centrX - size / 3, centrY - size / 2 - size / 4, centrX - size / 3 + 10, centrY + size / 2 + size / 4, mPaint);
-                        canvas.drawRect(centrX, centrY - size / 2 - size / 4, centrX + 10, centrY + size / 2 + size / 4, mPaint);
-                        canvas.drawRect(centrX + size / 3, centrY - size / 2 - size / 4, centrX  + size / 3 + 10, centrY + size / 2 + size / 4, mPaint);
-                        canvas.drawRect(centrX - size / 2 - size / 4, centrY - size / 3, centrX + size / 2 + size / 4, centrY - size / 3 + 10, mPaint);
-                        canvas.drawRect(centrX - size / 2 - size / 4, centrY, centrX + size / 2 + size / 4, centrY + 10, mPaint);
-                        canvas.drawRect(centrX - size / 2 - size / 4, centrY + size / 3, centrX + size / 2 + size / 4, centrY + size / 3 + 10, mPaint);
-                        canvas.rotate(-45, centrX, centrY);
-                        canvas.drawRect(centrX - size / 2 - size / 4, centrY, centrX + size / 2 + size / 4, centrY + 10, mPaint);
-                        canvas.rotate(45, centrX, centrY);
-                        canvas.rotate(45, centrX, centrY);
-                        canvas.drawRect(centrX - size / 2 - size / 4, centrY, centrX + size / 2 + size / 4, centrY + 10, mPaint);
-                        canvas.rotate(-45, centrX, centrY);
+                        mPaint.setColor(Color.BLUE);
+                        mPaint.setTextSize(70);
+                        canvas.drawText(getResources().getString(R.string.dead_heat), centrX - size / 2 + size / 3, centrY - size / 2, mPaint);
+                        mPaint.setColor(Color.BLACK);
                         break;
                     default:
 
@@ -474,11 +543,26 @@ public class GameActivity extends Activity implements View.OnTouchListener {
                 centrY = size / 2;
                 size = (int)(size * Math.sqrt(2)) - 60;
             }
-            //mPaint.setStyle(Paint.Style.STROKE);
             canvas.drawCircle(x + centrX, y + centrY, centrX - 10, mPaint);
             mPaint.setColor(Color.GREEN);
             canvas.drawCircle(x + centrX, y + centrY, centrX - 20, mPaint);
             mPaint.setColor(Color.BLACK);
+        }
+    }
+    public void sendSet(int tmp1, int tmp2){
+        BluetoothTransmit bttr = new BluetoothTransmit(BluetoothConnect.getInstance().getSocket());
+        if(move){
+            bttr.setBuff(new byte[]{(byte)tmp1, (byte)tmp2, 1, 1});
+        }else{
+            bttr.setBuff(new byte[]{(byte)tmp1, (byte)tmp2, 2, 0});
+        }
+        bttr.start();
+    }
+    public void onDestroy(){
+        super.onDestroy();
+        BluetoothAdapter bta = BluetoothAdapter.getDefaultAdapter();
+        if (bta.isEnabled()){
+            bta.disable();
         }
     }
 }
