@@ -50,5 +50,6 @@
     <string name="title_activity_open_gl_">OpenGL_Activity</string>
     <string name="adSizee" translatable="false">BANNER</string>
     <string name="banner_ad_unit_id_1" translatable="false">ca-app-pub-3483721846143560/1981284535</string>
+    <string name="mute">Mute ON</string>
 
 </resources>

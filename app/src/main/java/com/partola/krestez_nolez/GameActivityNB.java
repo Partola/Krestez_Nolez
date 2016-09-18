@@ -45,13 +45,13 @@ public class GameActivityNB extends Activity implements View.OnTouchListener {
         setContentView(R.layout.activity_game_activity_nb);
 
         dw = (DrawView)findViewById(R.id.drawView);
-        AdView mAdView = (AdView)findViewById(R.id.adView1);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+//        AdView mAdView = (AdView)findViewById(R.id.adView1);
+//        AdRequest adRequest = new AdRequest.Builder().build();
+//        mAdView.loadAd(adRequest);
 
-        AdView mAdView1 =  (AdView)findViewById(R.id.adView2);
-        AdRequest adRequest1 = new AdRequest.Builder().build();
-        mAdView1.loadAd(adRequest1);
+//        AdView mAdView1 =  (AdView)findViewById(R.id.adView2);
+//        AdRequest adRequest1 = new AdRequest.Builder().build();
+//        mAdView1.loadAd(adRequest1);
         dw.setOnTouchListener(this);
     }
 
