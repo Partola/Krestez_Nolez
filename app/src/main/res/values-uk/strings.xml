@@ -38,4 +38,5 @@
     <string name="waiting_BT">Увімкнення BT...</string>
     <string name="btn_con_serv">Очикувати вхідне з\'єднання</string>
     <string name="bounded_Devices">Виберіть пристрій для з\'єднання</string>
+    <string name="mute">Звук УВІМК</string>
 </resources>
