@@ -40,13 +40,6 @@ public class GameActivity extends Activity implements View.OnTouchListener {
         setContentView(R.layout.activity_game);
 
         dw = (DrawView)findViewById(R.id.drawView1);
-//        AdView mAdView = (AdView)findViewById(R.id.adView3);
-//        AdRequest adRequest = new AdRequest.Builder().build();
-//        mAdView.loadAd(adRequest);
-
-//        AdView mAdView1 =  (AdView)findViewById(R.id.adView4);
-//        AdRequest adRequest1 = new AdRequest.Builder().build();
-//        mAdView1.loadAd(adRequest1);
         dw.setOnTouchListener(this);
 
         btrc = new BluetoothReceive(BluetoothConnect.getInstance().getSocket());
